@@ -1,4 +1,4 @@
-import 'package:chat_app/shared/styles/my_colors.dart';
+import '../../shared/styles/my_colors.dart';
 import 'package:flutter/material.dart';
 
 class VideoMessage extends StatelessWidget {

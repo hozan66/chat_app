@@ -1,7 +1,7 @@
-import 'package:chat_app/shared/components/components.dart';
-import 'package:chat_app/shared/styles/my_colors.dart';
-import 'package:chat_app/ui/screens/all_chats/cubit/cubit.dart';
-import 'package:chat_app/ui/screens/all_chats/cubit/states.dart';
+import '../../../shared/components/components.dart';
+import '../../../shared/styles/my_colors.dart';
+import 'cubit/cubit.dart';
+import 'cubit/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';

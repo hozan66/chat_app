@@ -1,4 +1,4 @@
-import 'package:chat_app/network/models/sign_in_model.dart';
+import '../../../../network/models/sign_in_model.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable

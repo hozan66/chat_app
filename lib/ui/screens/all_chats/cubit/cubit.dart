@@ -1,5 +1,6 @@
-import 'package:chat_app/ui/screens/all_chats/cubit/states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'states.dart';
 
 class AllChatsCubit extends Cubit<AllChatsStates> {
   AllChatsCubit() : super(AllChatsInitialState());

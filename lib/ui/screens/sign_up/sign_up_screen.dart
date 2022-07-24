@@ -1,6 +1,6 @@
-import 'package:chat_app/shared/styles/my_colors.dart';
-import 'package:chat_app/ui/screens/sign_up/cubit/cubit.dart';
-import 'package:chat_app/ui/screens/sign_up/cubit/states.dart';
+import '../../../shared/styles/my_colors.dart';
+import 'cubit/cubit.dart';
+import 'cubit/states.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';

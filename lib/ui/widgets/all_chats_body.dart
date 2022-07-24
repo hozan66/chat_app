@@ -1,10 +1,10 @@
-import 'package:chat_app/network/models/chat_model.dart';
-import 'package:chat_app/shared/components/components.dart';
-import 'package:chat_app/shared/components/filled_outline_button.dart';
-import 'package:chat_app/shared/constants/default_values.dart';
-import 'package:chat_app/shared/styles/my_colors.dart';
-import 'package:chat_app/ui/screens/chat_details/chat_details_screen.dart';
-import 'package:chat_app/ui/widgets/chat_card.dart';
+import '../../network/models/chat_model.dart';
+import '../../shared/components/components.dart';
+import '../../shared/components/filled_outline_button.dart';
+import '../../shared/constants/default_values.dart';
+import '../../shared/styles/my_colors.dart';
+import '../screens/chat_details/chat_details_screen.dart';
+import 'chat_card.dart';
 import 'package:flutter/material.dart';
 
 class AllChatsBody extends StatelessWidget {

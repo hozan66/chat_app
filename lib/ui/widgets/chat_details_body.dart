@@ -1,6 +1,6 @@
-import 'package:chat_app/shared/constants/default_values.dart';
-import 'package:chat_app/ui/widgets/chat_input_field.dart';
-import 'package:chat_app/ui/widgets/message.dart';
+import '../../shared/constants/default_values.dart';
+import 'chat_input_field.dart';
+import 'message.dart';
 import 'package:flutter/material.dart';
 
 import '../../network/models/chat_message_model.dart';

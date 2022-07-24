@@ -1,4 +1,4 @@
-import 'package:chat_app/shared/constants/default_values.dart';
+import '../../../shared/constants/default_values.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/chat_details_body.dart';

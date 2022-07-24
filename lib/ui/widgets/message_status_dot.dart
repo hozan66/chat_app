@@ -1,5 +1,5 @@
-import 'package:chat_app/shared/constants/default_values.dart';
-import 'package:chat_app/shared/styles/my_colors.dart';
+import '../../shared/constants/default_values.dart';
+import '../../shared/styles/my_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../network/models/chat_message_model.dart';

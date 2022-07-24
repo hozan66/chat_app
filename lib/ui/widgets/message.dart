@@ -1,7 +1,7 @@
-import 'package:chat_app/ui/widgets/audio_message.dart';
-import 'package:chat_app/ui/widgets/message_status_dot.dart';
-import 'package:chat_app/ui/widgets/text_message.dart';
-import 'package:chat_app/ui/widgets/video_message.dart';
+import 'audio_message.dart';
+import 'message_status_dot.dart';
+import 'text_message.dart';
+import 'video_message.dart';
 import 'package:flutter/material.dart';
 
 import '../../network/models/chat_message_model.dart';

@@ -1,11 +1,11 @@
-import 'package:chat_app/network/local/cache_helper.dart';
-import 'package:chat_app/network/remote/dio_helper.dart';
-import 'package:chat_app/shared/bloc_observer.dart';
-import 'package:chat_app/shared/constants/strings.dart';
-import 'package:chat_app/shared/styles/my_theme.dart';
-import 'package:chat_app/ui/screens/all_chats/all_chats_screen.dart';
-import 'package:chat_app/ui/screens/sign_in_and_sign_up/sign_in_and_sign_up_screen.dart';
-import 'package:chat_app/ui/screens/welcome/welcome_screen.dart';
+import 'network/local/cache_helper.dart';
+import 'network/remote/dio_helper.dart';
+import 'shared/bloc_observer.dart';
+import 'shared/constants/strings.dart';
+import 'shared/styles/my_theme.dart';
+import 'ui/screens/all_chats/all_chats_screen.dart';
+import 'ui/screens/sign_in_and_sign_up/sign_in_and_sign_up_screen.dart';
+import 'ui/screens/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
