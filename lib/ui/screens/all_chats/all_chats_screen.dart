@@ -1,15 +1,29 @@
-import '../../../shared/components/components.dart';
 import '../../../shared/styles/my_colors.dart';
+import '../user_chat/add_user_chat_screen.dart';
 import 'cubit/cubit.dart';
 import 'cubit/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uuid/uuid.dart';
 import '../../widgets/all_chats_body.dart';
-import '../user_chat/user_chat_screen.dart';
 
 class AllChatsScreen extends StatelessWidget {
   const AllChatsScreen({Key? key}) : super(key: key);
+
+  void _addUserChat(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // So keyboard won't cover showModalBottomSheet
+      builder: (context) => SingleChildScrollView(
+        child: Container(
+          padding:
+              // viewInsets is for the keyboard
+              // viewInsets represents areas fully obscured by the system
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: AddUserChatScreen(),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +43,17 @@ class AllChatsScreen extends StatelessWidget {
                 color: Colors.white,
               ),
               onPressed: () {
-                var uuid = const Uuid();
-                String userId = uuid.v1();
-                navigateTo(
-                    context,
-                    UserChatScreen(
-                      userId: userId,
-                    ));
+                //todo
+
+                _addUserChat(context);
+
+                // var uuid = const Uuid();
+                // String userId = uuid.v1();
+                // navigateTo(
+                //     context,
+                //     UserChatScreen(
+                //       userId: userId,
+                //     ));
               },
             ),
             bottomNavigationBar: buildBottomNavigationBar(cubit),

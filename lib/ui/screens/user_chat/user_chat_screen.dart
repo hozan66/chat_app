@@ -1,13 +1,21 @@
-import '../../../network/models/message_model.dart';
+import 'package:chat_app/network/end_points.dart';
+import 'package:chat_app/network/remote/dio_helper.dart';
+import 'dart:developer';
+import '../../../network/models/user_chat_model.dart';
 import '../../../shared/constants/default_values.dart';
 import 'package:flutter/material.dart';
-import '../../../shared/constants/strings.dart';
 import '../../../shared/styles/my_colors.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class UserChatScreen extends StatefulWidget {
-  final String userId;
-  const UserChatScreen({Key? key, required this.userId}) : super(key: key);
+  final String roomChatName;
+  final String authorName;
+
+  const UserChatScreen({
+    Key? key,
+    required this.roomChatName,
+    required this.authorName,
+  }) : super(key: key);
 
   @override
   State<UserChatScreen> createState() => _UserChatScreenState();
@@ -15,24 +23,69 @@ class UserChatScreen extends StatefulWidget {
 
 class _UserChatScreenState extends State<UserChatScreen> {
   final _messageController = TextEditingController();
+  final _scrollController = ScrollController();
   IO.Socket? socket;
-  List<MessageModel> listMsg = [];
+  List<UserChatDataModel> listMsg = [];
+
+  // UserChatModel? userChatModel;
 
   @override
   void initState() {
     super.initState();
+
     connect();
+    getDataAPI();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void getDataAPI() {
+    DioHelper.getData(url: getChatEndPoint).then((value) {
+      log(value.data.toString());
+      // userChatModel = UserChatModel.fromJson(value.data);
+
+      for (var element in value.data) {
+        for (var element2 in element['data']) {
+          listMsg.add(UserChatDataModel.fromJson(element2));
+        }
+      }
+
+      setState(() {
+        listMsg;
+      });
+    }).catchError((error) {
+      log('getDataAPI Error=${error.toString()}');
+    });
   }
+
+  void sendDataAPI(String message) {
+    DioHelper.postData(
+      url: sendChatEndPoint,
+      data: {
+        'room': widget.roomChatName,
+        'data': {
+          'room': widget.roomChatName,
+          'author': widget.authorName,
+          'message': message,
+          'messageType': 'message',
+          'see': [widget.authorName, 'mm@gmail.com'],
+          'time': "6:56",
+        },
+      },
+    ).then((value) {
+      log('Send Data=${value.data}');
+    }).catchError((error) {
+      log('Error=${error.toString()}');
+    });
+  }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
 
   void connect() {
     //Important: If your server is running on localhost and you are testing your app on Android then replace http://localhost:3000 with http://10.0.2.2:3000
     // Dart client
-    socket = IO.io('http://10.0.2.2:3000', <String, dynamic>{
+    socket = IO.io('http://192.168.1.17:3001', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -47,14 +100,17 @@ class _UserChatScreenState extends State<UserChatScreen> {
       socket!.on('receive_message', (data) {
         print('receive_message from backend: $data');
 
-        if (data['user_id'] != widget.userId) {
+        if (data['author'] != widget.authorName) {
           setState(() {
-            listMsg.add(MessageModel(
-                room: data['room'],
-                type: data['type'],
-                msg: data['msg'],
-                sender: data['sender'],
-                isSender: data['isSender']));
+            listMsg.add(UserChatDataModel(
+              room: data['room'],
+              sender: data['author'],
+              message: data['message'],
+              messageType: data['messageType'],
+              // see: data['see'],
+              // time: data['time'],
+              // id: data['_id'],
+            ));
           });
         }
       });
@@ -69,25 +125,30 @@ class _UserChatScreenState extends State<UserChatScreen> {
   void sendMsg(String msg) {
     // Send data from frontend to backend
 
-    MessageModel ownMsg = MessageModel(
-      room: 'room_chat',
-      type: 'ownMsg',
-      msg: msg,
-      sender: token ?? 'sender',
-      isSender: true,
+    UserChatDataModel ownMsg = UserChatDataModel(
+      room: widget.roomChatName,
+      sender: widget.authorName,
+      message: msg,
+      messageType: 'message',
+      // see: ['ali@gmail.com', 'mm@gmail.com'],
+      // time: "6:56",
     );
+
     listMsg.add(ownMsg);
     setState(() {
       listMsg;
     });
+
     socket!.emit('send_message', {
-      'room': 'room_chat',
-      'type': 'ownMsg',
-      'msg': msg,
-      'sender': token,
-      'isSender': true,
-      'user_id': widget.userId,
+      'room': widget.roomChatName,
+      'author': widget.authorName,
+      'message': msg,
+      'messageType': 'message',
+      'see': [widget.authorName, 'mm@gmail.com'],
+      'time': "6:56"
     });
+
+    sendDataAPI(msg);
   }
 
   @override
@@ -103,9 +164,21 @@ class _UserChatScreenState extends State<UserChatScreen> {
                 horizontal: myDefaultPadding,
               ),
               child: ListView.builder(
+                reverse: true,
+                controller: _scrollController,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                // shrinkWrap: true,
+                // reverse: true,
                 physics: const BouncingScrollPhysics(),
                 itemCount: listMsg.length,
-                itemBuilder: (context, index) => message(listMsg[index]),
+                itemBuilder: (context, index) {
+                  // if (index == listMsg.length) {
+                  //   return Container(height: 80.0);
+                  // }
+
+                  return message(listMsg.reversed.toList()[index]);
+                },
               ),
             ),
           ),
@@ -125,18 +198,21 @@ class _UserChatScreenState extends State<UserChatScreen> {
               // backgroundImage: AssetImage('assets/images/user_2.png'),
               ),
           const SizedBox(width: myDefaultPadding * 0.75),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'Room Chat',
-                style: TextStyle(fontSize: 16.0),
-              ),
-              Text(
-                'Active 3m ago',
-                style: TextStyle(fontSize: 12.0),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.roomChatName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 16.0),
+                ),
+                const Text(
+                  'Active 3m ago',
+                  style: TextStyle(fontSize: 12.0),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -200,7 +276,14 @@ class _UserChatScreenState extends State<UserChatScreen> {
                     const SizedBox(width: myDefaultPadding / 4),
                     Expanded(
                       child: TextFormField(
-                        // autofocus: true,
+                        onTap: () {
+                          // _scrollController.animateTo(
+                          //   _scrollController.position.maxScrollExtent,
+                          //   duration: const Duration(milliseconds: 300),
+                          //   curve: Curves.easeOut,
+                          // );
+                        },
+                        autofocus: true,
                         controller: _messageController,
                         decoration: const InputDecoration(
                           hintText: 'Type a message',
@@ -228,6 +311,12 @@ class _UserChatScreenState extends State<UserChatScreen> {
                     const SizedBox(width: myDefaultPadding / 4),
                     IconButton(
                       onPressed: () {
+                        // _scrollController.animateTo(
+                        //   _scrollController.position.maxScrollExtent,
+                        //   duration: const Duration(milliseconds: 300),
+                        //   curve: Curves.easeOut,
+                        // );
+
                         String msg = _messageController.text.trim();
                         if (msg.isNotEmpty) {
                           print(msg);
@@ -253,16 +342,22 @@ class _UserChatScreenState extends State<UserChatScreen> {
     );
   }
 
-  Widget message(MessageModel model) {
+  Widget message(UserChatDataModel model) {
+    // _scrollController.animateTo(
+    //   _scrollController.position.maxScrollExtent,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeOut,
+    // );
     return Padding(
       padding: const EdgeInsets.only(
         top: myDefaultPadding,
       ),
       child: Row(
-        mainAxisAlignment:
-            model.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: model.sender == widget.authorName
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
-          if (!model.isSender) ...[
+          if (model.sender != widget.authorName) ...[
             // Used to add list to the current list
             const CircleAvatar(
               radius: 12.0,
@@ -278,20 +373,24 @@ class _UserChatScreenState extends State<UserChatScreen> {
     );
   }
 
-  Widget textMessage(MessageModel model) {
+  Widget textMessage(UserChatDataModel model) {
+    // log('log me', name: 'my.app.category');
+
     return Container(
+      margin: const EdgeInsets.only(bottom: 8.0),
       padding: const EdgeInsets.symmetric(
         horizontal: myDefaultPadding * 0.75,
         vertical: myDefaultPadding / 2,
       ),
       decoration: BoxDecoration(
-        color: MyColors.myPrimaryColor.withOpacity(model.isSender ? 1.0 : 0.08),
+        color: MyColors.myPrimaryColor
+            .withOpacity(model.sender == widget.authorName ? 1.0 : 0.08),
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text(
-        model.msg,
+        model.message,
         style: TextStyle(
-          color: model.isSender
+          color: model.sender == widget.authorName
               ? Colors.white
               : Theme.of(context).textTheme.bodyText1?.color,
         ),

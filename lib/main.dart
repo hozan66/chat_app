@@ -1,3 +1,6 @@
+import 'package:path_provider/path_provider.dart';
+
+import 'business_logic/bloc_exports.dart';
 import 'network/local/cache_helper.dart';
 import 'network/remote/dio_helper.dart';
 import 'shared/bloc_observer.dart';
@@ -7,10 +10,12 @@ import 'ui/screens/all_chats/all_chats_screen.dart';
 import 'ui/screens/sign_in_and_sign_up/sign_in_and_sign_up_screen.dart';
 import 'ui/screens/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final storage = await HydratedStorage.build(
+      storageDirectory: await getApplicationDocumentsDirectory());
 
   DioHelper.init();
   await CacheHelper.init();
@@ -34,7 +39,7 @@ void main() async {
   widget = const AllChatsScreen();
   token = 'Hozan';
 
-  BlocOverrides.runZoned(
+  HydratedBlocOverrides.runZoned(
     () {
       // Use cubits...
       runApp(MyApp(
@@ -43,6 +48,8 @@ void main() async {
       ));
     },
     blocObserver: MyBlocObserver(),
+    // Implement the storage
+    storage: storage,
   );
 }
 
@@ -55,12 +62,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Chat App',
-      theme: MyTheme.lightThemeData(context),
-      darkTheme: MyTheme.darkThemeData(context),
-      home: startWidget,
+    return BlocProvider(
+      // Global access object
+      create: (context) => UserChatBloc(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Chat App',
+        theme: MyTheme.lightThemeData(context),
+        darkTheme: MyTheme.darkThemeData(context),
+        home: startWidget,
+      ),
     );
   }
 }

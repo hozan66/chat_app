@@ -11,7 +11,7 @@ class DioHelper {
     dio = Dio(
       BaseOptions(
         //we put here all fixed values
-        baseUrl: 'http://192.168.1.20:',
+        baseUrl: 'http://192.168.1.17:',
         receiveDataWhenStatusError: true,
       ),
     );
